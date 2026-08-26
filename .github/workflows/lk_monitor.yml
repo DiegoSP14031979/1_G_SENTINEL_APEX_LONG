@@ -1,0 +1,28 @@
+name: G-SENTINEL APEX LONG - LK Funds Monitor
+
+on:
+  schedule:
+    - cron: '0 19 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  update-portfolio:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Código
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Ejecutar Extractor de Fondos
+        run: python fetch_funds.py
+
+      - name: Commit y Push de Actualizaciones JSON
+        run: |
+          git config --global user.name "G-SENTINEL-BOT"
+          git config --global user.email "bot@g-sentinel.local"
+          git add fondos_lk.json historial_fondos.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "update: Pata APEX LONG - Fondos LK [skip ci]" && git push)
