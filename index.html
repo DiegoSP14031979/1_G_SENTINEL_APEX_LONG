@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>G-SENTINEL // APEX LONG - Fondos Laboral Kutxa</title>
+    <title>G-SENTINEL 1 // APEX LONG - LABORAL KUTXA</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -20,10 +20,57 @@
         * { box-sizing: border-box; }
         body { background-color: var(--bg-color); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; }
         
-        /* Header */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-blue); padding-bottom: 12px; margin-bottom: 20px; }
-        .header h1 { margin: 0; font-size: 20px; color: var(--accent-blue); letter-spacing: 1px; font-family: monospace; }
+        /* G-CORE Top Header Emblem */
+        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--accent-blue); padding-bottom: 12px; margin-bottom: 20px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
         
+        .badge-emblem {
+            background: linear-gradient(135deg, rgba(0,240,255,0.15), rgba(0,100,200,0.3));
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 6px 12px;
+            clip-path: polygon(0 0, 90% 0, 100% 100%, 0% 100%);
+            letter-spacing: 1px;
+        }
+
+        .title-container h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 1.5px;
+            font-family: monospace;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+        .title-container .subtitle {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            margin-top: 3px;
+            font-family: monospace;
+            text-transform: uppercase;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
         /* KPI Grid */
         .grid-kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 15px; }
@@ -31,7 +78,7 @@
         .card-value { font-size: 22px; font-weight: bold; margin: 8px 0; color: #fff; }
         .card-sub { font-size: 12px; color: var(--accent-green); }
 
-        /* Main Section: Chart Full Width + Recommendation Matrix Side by Side */
+        /* Main Section */
         .main-grid { display: grid; grid-template-columns: 1.6fr 1.1fr; gap: 20px; margin-bottom: 25px; }
         
         /* Recommendation Module */
@@ -54,10 +101,19 @@
 </head>
 <body>
 
-    <!-- Header Principal -->
+    <!-- Header Emblem Estilo G-CORE -->
     <div class="header">
-        <h1>G-SENTINEL // APEX LONG</h1>
-        <span id="last-update" style="color: var(--text-muted); font-size: 12px; font-family: monospace;">Cargando...</span>
+        <div class="header-left">
+            <div class="badge-emblem">G-SENTINEL 1</div>
+            <div class="title-container">
+                <h1>APEX LONG // LABORAL KUTXA FONDOS</h1>
+                <div class="subtitle">G-SENTINEL QUANTITATIVE MONITORING ECOSYSTEM</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="status-dot"></div>
+            <span>CONEXIÓN G-CORE: ACTIVA &nbsp;|&nbsp; UPDATED: <span id="last-update">...</span></span>
+        </div>
     </div>
 
     <!-- KPIs de Cartera -->
@@ -79,7 +135,7 @@
         </div>
     </div>
 
-    <!-- Main Grid: Chart Lineal Ampliada + Matriz de Recomendaciones Laboral Kutxa -->
+    <!-- Main Grid -->
     <div class="main-grid">
         <!-- Gráfica Histórica de Patrimonio -->
         <div class="card">
@@ -92,14 +148,14 @@
             <div>
                 <div class="rec-header">
                     <span>Recomendaciones de Traspaso (Laboral Kutxa)</span>
-                    <span class="badge badge-green">Fiscalidad 0€</span>
+                    <span class="badge badge-green">FISCALIDAD 0€</span>
                 </div>
                 
                 <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
                     Análisis comparativo de rentabilidad vs Catálogo Oficial Laboral Kutxa para optimizar alfa sin peaje fiscal.
                 </div>
 
-                <!-- Tabla Comparativa de Oportunidades -->
+                <!-- Tabla Comparativa -->
                 <table>
                     <thead>
                         <tr>
@@ -138,9 +194,9 @@
                 </table>
             </div>
 
-            <!-- Caja de Diagnóstico / Acción Recomendada por IA -->
+            <!-- Caja de Diagnóstico -->
             <div class="action-alert" id="rebalance-status">
-                <span style="color:var(--accent-green)">[ESTADO NEUTRAL]</span> Cartera balanceada al 51,17% BJ / 48,83% BU. No se requiere traspaso inmediato. Mantener ponderación actual.
+                <span style="color:var(--accent-green)">[ESTADO ÓPTIMO]</span> Cartera equilibrada (51.17% BJ / 48.83% BU). Rendimiento óptimo sin necesidad de rotación.
             </div>
         </div>
     </div>
@@ -152,7 +208,7 @@
                 const res = await fetch('fondos_lk.json');
                 const data = await res.json();
                 
-                document.getElementById('last-update').innerText = 'Actualizado: ' + data.timestamp;
+                document.getElementById('last-update').innerText = data.timestamp;
                 document.getElementById('total-val').innerText = data.patrimonio_fondos_total.toLocaleString('es-ES') + ' €';
                 document.getElementById('bj-val').innerText = data.fondos.LK_BJ_FI.valor_total_eur.toLocaleString('es-ES') + ' €';
                 document.getElementById('bj-weight').innerText = data.kpis.peso_lk_bj + '% Peso Cartera';
