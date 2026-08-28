@@ -33,7 +33,7 @@ def main():
     peso_bj = round((val_bj / total_fondos) * 100, 2)
     peso_bu = round((val_bu / total_fondos) * 100, 2)
 
-    # 1. Actualizar fondos_lk.json
+    # 1. Guardar Estado Actual en fondos_lk.json
     estado_actual = {
         "timestamp": timestamp_actual,
         "fondos": FONDOS_CONFIG,
@@ -47,19 +47,33 @@ def main():
     with open("fondos_lk.json", "w", encoding="utf-8") as f:
         json.dump(estado_actual, f, indent=4, ensure_ascii=False)
 
-    # 2. Actualizar historial_fondos.json
+    # 2. Cargar y Actualizar historial_fondos.json manteniendo el pasado
+    historial = []
+    if os.path.exists("historial_fondos.json"):
+        try:
+            with open("historial_fondos.json", "r", encoding="utf-8") as f:
+                historial = json.load(f)
+        except Exception as e:
+            print(f"[ADVERTENCIA] Error leyendo historial existente: {e}")
+            historial = []
+
     fecha_hoy = datetime.now().strftime("%Y-%m-%d")
-    historial = [{
+    
+    # Reemplazar la entrada de hoy si ya existe para evitar duplicados en el mismo dia
+    historial = [h for h in historial if h.get("fecha") != fecha_hoy]
+
+    # Añadir el registro del dia actual
+    historial.append({
         "fecha": fecha_hoy,
         "lk_bj_val": val_bj,
         "lk_bu_val": val_bu,
         "total_fondos": total_fondos
-    }]
+    })
 
     with open("historial_fondos.json", "w", encoding="utf-8") as f:
         json.dump(historial, f, indent=4, ensure_ascii=False)
 
-    print(f" -> [OK] Archivos unificados. Patrimonio Total Real: {total_fondos} €")
+    print(f" -> [OK] Proceso completado. Patrimonio Total Real: {total_fondos} €")
 
 if __name__ == "__main__":
     main()
