@@ -1,24 +1,24 @@
 {
-    "timestamp": "2026-08-28 08:53:35",
+    "timestamp": "2026-08-28 08:56:37",
     "fondos": {
         "LK_BU_FI": {
             "nombre": "LK Bolsa Universal FI",
             "isin": "ES0164734032",
-            "vl": 14.292853,
+            "vl": 22.1522,
             "participaciones": 589.68,
-            "valor_total_eur": 8428.21
+            "valor_total_eur": 13062.7
         },
         "LK_BJ_FI": {
             "nombre": "LK Bolsa Japón FI",
             "isin": "ES0115396030",
-            "vl": 16.232512,
+            "vl": 32.9852,
             "participaciones": 414.95,
-            "valor_total_eur": 6735.68
+            "valor_total_eur": 13687.24
         }
     },
-    "patrimonio_fondos_total": 15163.89,
+    "patrimonio_fondos_total": 26749.94,
     "kpis": {
-        "peso_lk_bj": 44.42,
-        "peso_lk_bu": 55.58
+        "peso_lk_bj": 51.17,
+        "peso_lk_bu": 48.83
     }
 }
