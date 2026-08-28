@@ -1,8 +1,68 @@
 [
     {
+        "fecha": "2026-01-01",
+        "lk_bj_val": 10500.00,
+        "lk_bu_val": 10783.66,
+        "total_fondos": 21283.66
+    },
+    {
+        "fecha": "2026-01-12",
+        "lk_bj_val": 10919.56,
+        "lk_bu_val": 11028.48,
+        "total_fondos": 21948.04
+    },
+    {
+        "fecha": "2026-02-11",
+        "lk_bj_val": 11847.98,
+        "lk_bu_val": 11046.12,
+        "total_fondos": 22894.10
+    },
+    {
+        "fecha": "2026-03-12",
+        "lk_bj_val": 11099.76,
+        "lk_bu_val": 10896.56,
+        "total_fondos": 21996.32
+    },
+    {
+        "fecha": "2026-04-13",
+        "lk_bj_val": 11716.06,
+        "lk_bu_val": 11120.41,
+        "total_fondos": 22836.47
+    },
+    {
+        "fecha": "2026-05-12",
+        "lk_bj_val": 12306.29,
+        "lk_bu_val": 12013.60,
+        "total_fondos": 24319.89
+    },
+    {
+        "fecha": "2026-06-11",
+        "lk_bj_val": 12780.47,
+        "lk_bu_val": 12243.73,
+        "total_fondos": 25024.20
+    },
+    {
+        "fecha": "2026-07-13",
+        "lk_bj_val": 13413.72,
+        "lk_bu_val": 12798.34,
+        "total_fondos": 26212.06
+    },
+    {
+        "fecha": "2026-08-15",
+        "lk_bj_val": 13536.28,
+        "lk_bu_val": 13126.83,
+        "total_fondos": 26663.11
+    },
+    {
+        "fecha": "2026-08-26",
+        "lk_bj_val": 13601.44,
+        "lk_bu_val": 13012.07,
+        "total_fondos": 26613.51
+    },
+    {
         "fecha": "2026-08-28",
         "lk_bj_val": 13687.24,
-        "lk_bu_val": 13062.7,
+        "lk_bu_val": 13062.70,
         "total_fondos": 26749.94
     }
 ]
