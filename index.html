@@ -12,6 +12,7 @@
             --border-color: #30363d;
             --accent-blue: #00f0ff;
             --accent-green: #3fb950;
+            --accent-purple: #a371f7;
             --text-main: #c9d1d9;
             --text-muted: #8b949e;
         }
@@ -36,7 +37,7 @@
         <div class="card">
             <div class="card-title">Patrimonio Fondos</div>
             <div class="card-value" id="total-val">-- €</div>
-            <div class="card-sub">+5.329,85 € (+25.04%)</div>
+            <div class="card-sub">+5.466,28 € (+25.68%)</div>
         </div>
         <div class="card">
             <div class="card-title">LK Bolsa Japón FI</div>
@@ -50,8 +51,14 @@
         </div>
     </div>
     <div class="charts-container">
-        <div class="card"><canvas id="historyChart" height="120"></canvas></div>
-        <div class="card"><canvas id="weightChart" height="120"></canvas></div>
+        <div class="card">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px;">Evolución del Patrimonio</div>
+            <canvas id="historyChart" height="120"></canvas>
+        </div>
+        <div class="card">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px;">Distribución de Pesos</div>
+            <canvas id="weightChart" height="120"></canvas>
+        </div>
     </div>
     <div class="rebalance-box">
         <div style="color: var(--accent-blue); font-weight: bold; margin-bottom: 8px;">Matriz de Rebalanceo & Asesoría de Traspasos</div>
@@ -60,6 +67,7 @@
     <script>
         async function loadData() {
             try {
+                // Cargar Estado Actual
                 const res = await fetch('fondos_lk.json');
                 const data = await res.json();
                 document.getElementById('last-update').innerText = 'Actualizado: ' + data.timestamp;
@@ -76,6 +84,7 @@
                     statusBox.innerHTML = `<span style="color:var(--accent-green)">[ESTADO NEUTRAL]</span> Cartera dentro de rangos normales (${data.kpis.peso_lk_bj}% BJ / ${data.kpis.peso_lk_bu}% BU). No se requieren traspasos.`;
                 }
 
+                // Gráfica de Queso (Ponderación)
                 new Chart(document.getElementById('weightChart'), {
                     type: 'doughnut',
                     data: {
@@ -84,6 +93,35 @@
                     },
                     options: { plugins: { legend: { labels: { color: '#c9d1d9' } } } }
                 });
+
+                // Cargar Histórico para la Gráfica Lineal
+                const resHist = await fetch('historial_fondos.json');
+                const dataHist = await resHist.json();
+
+                const labels = dataHist.map(h => h.fecha);
+                const bjVals = dataHist.map(h => h.lk_bj_val);
+                const buVals = dataHist.map(h => h.lk_bu_val);
+                const totalVals = dataHist.map(h => h.total_fondos);
+
+                new Chart(document.getElementById('historyChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Patrimonio Total', data: totalVals, borderColor: '#3fb950', backgroundColor: 'rgba(63, 185, 80, 0.1)', fill: true, tension: 0.3 },
+                            { label: 'LK Bolsa Japón', data: bjVals, borderColor: '#00f0ff', fill: false, tension: 0.3 },
+                            { label: 'LK Bolsa Universal', data: buVals, borderColor: '#58a6ff', fill: false, tension: 0.3 }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            x: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } },
+                            y: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } }
+                        },
+                        plugins: { legend: { labels: { color: '#c9d1d9' } } }
+                    }
+                });
+
             } catch (e) { console.error("Error cargando JSON:", e); }
         }
         loadData();
