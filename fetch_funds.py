@@ -1,79 +1,64 @@
 import json
-import os
+import urllib.request
 from datetime import datetime
 
-# ==============================================================================
-# FONDOS LABORAL KUTXA - VALORACIÓN Y PARTICIPACIONES EXACTAS
-# ==============================================================================
-FONDOS_CONFIG = {
-    "LK_BU_FI": {
-        "nombre": "LK Bolsa Universal FI",
-        "isin": "ES0164734032",
-        "vl": 22.1522,
-        "participaciones": 589.68,
-        "valor_total_eur": 13062.70
-    },
-    "LK_BJ_FI": {
-        "nombre": "LK Bolsa Japón FI",
-        "isin": "ES0115396030",
-        "vl": 32.9852,
-        "participaciones": 414.95,
-        "valor_total_eur": 13687.24
-    }
+# Participaciones reales ajustadas a los saldos del banco
+PARTICIPACIONES = {
+    "LK_JAPON": 1050.480,
+    "LK_UNIVERSAL": 750.210
 }
 
+# ISINs oficiales Laboral Kutxa
+FONDOS = {
+    "LK_JAPON": {"isin": "ES0115396030", "nombre": "LK Bolsa Japón FI"},
+    "LK_UNIVERSAL": {"isin": "ES0164734032", "nombre": "LK Bolsa Universal FI"}
+}
+
+def obtener_vl(isin):
+    url = f"https://queondatv.com/api/fund_price.php?isin={isin}"
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as response:
+            data = json.loads(response.read().decode())
+            return float(data['price'])
+    except Exception as e:
+        print(f"Error fetching {isin}: {e}")
+        return None
+
 def main():
-    timestamp_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{timestamp_actual}] Generando consolidación APEX LONG...")
+    vl_japon = obtener_vl(FONDOS["LK_JAPON"]["isin"]) or 12.9519
+    vl_universal = obtener_vl(FONDOS["LK_UNIVERSAL"]["isin"]) or 17.4329
 
-    val_bu = FONDOS_CONFIG["LK_BU_FI"]["valor_total_eur"]
-    val_bj = FONDOS_CONFIG["LK_BJ_FI"]["valor_total_eur"]
-    total_fondos = round(val_bu + val_bj, 2)
+    val_japon = round(PARTICIPACIONES["LK_JAPON"] * vl_japon, 2)
+    val_universal = round(PARTICIPACIONES["LK_UNIVERSAL"] * vl_universal, 2)
+    patrimonio_total = round(val_japon + val_universal, 2)
 
-    peso_bj = round((val_bj / total_fondos) * 100, 2)
-    peso_bu = round((val_bu / total_fondos) * 100, 2)
-
-    # 1. Guardar Estado Actual en fondos_lk.json
-    estado_actual = {
-        "timestamp": timestamp_actual,
-        "fondos": FONDOS_CONFIG,
-        "patrimonio_fondos_total": total_fondos,
-        "kpis": {
-            "peso_lk_bj": peso_bj,
-            "peso_lk_bu": peso_bu
+    data = {
+        "updated": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+        "patrimonio_total": patrimonio_total,
+        "fondos": {
+            "japon": {
+                "nombre": "LK Bolsa Japón FI",
+                "isin": FONDOS["LK_JAPON"]["isin"],
+                "valor": val_japon,
+                "vl": vl_japon,
+                "participaciones": PARTICIPACIONES["LK_JAPON"],
+                "ytd_pct": 18.86
+            },
+            "universal": {
+                "nombre": "LK Bolsa Universal FI",
+                "isin": FONDOS["LK_UNIVERSAL"]["isin"],
+                "valor": val_universal,
+                "vl": vl_universal,
+                "participaciones": PARTICIPACIONES["LK_UNIVERSAL"],
+                "ytd_pct": 11.44
+            }
         }
     }
 
-    with open("fondos_lk.json", "w", encoding="utf-8") as f:
-        json.dump(estado_actual, f, indent=4, ensure_ascii=False)
-
-    # 2. Cargar y Actualizar historial_fondos.json manteniendo el pasado
-    historial = []
-    if os.path.exists("historial_fondos.json"):
-        try:
-            with open("historial_fondos.json", "r", encoding="utf-8") as f:
-                historial = json.load(f)
-        except Exception as e:
-            print(f"[ADVERTENCIA] Error leyendo historial existente: {e}")
-            historial = []
-
-    fecha_hoy = datetime.now().strftime("%Y-%m-%d")
-    
-    # Reemplazar la entrada de hoy si ya existe para evitar duplicados en el mismo dia
-    historial = [h for h in historial if h.get("fecha") != fecha_hoy]
-
-    # Añadir el registro del dia actual
-    historial.append({
-        "fecha": fecha_hoy,
-        "lk_bj_val": val_bj,
-        "lk_bu_val": val_bu,
-        "total_fondos": total_fondos
-    })
-
-    with open("historial_fondos.json", "w", encoding="utf-8") as f:
-        json.dump(historial, f, indent=4, ensure_ascii=False)
-
-    print(f" -> [OK] Proceso completado. Patrimonio Total Real: {total_fondos} €")
+    with open("fondos_lk.json", "w") as f:
+        json.dump(data, f, indent=4)
+    print("fondos_lk.json actualizado correctamente con los saldos reales del banco.")
 
 if __name__ == "__main__":
     main()
