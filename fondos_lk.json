@@ -1,21 +1,21 @@
 {
-    "updated": "2026-09-25 14:36:49",
-    "patrimonio_total": 26831.04,
+    "updated": "2026-09-25 14:44:53",
+    "patrimonio_total": 27263.41,
     "fondos": {
         "japon": {
             "nombre": "LK Bolsa Japón FI",
             "isin": "ES0115396030",
-            "valor": 13656.25,
-            "vl": 13.0,
-            "participaciones": 1050.481,
+            "valor": 13843.57,
+            "vl": 16.273146,
+            "participaciones": 850.700297,
             "ytd_pct": 18.86
         },
         "universal": {
             "nombre": "LK Bolsa Universal FI",
             "isin": "ES0164734032",
-            "valor": 13174.79,
-            "vl": 17.5614,
-            "participaciones": 750.213,
+            "valor": 13419.84,
+            "vl": 14.548783,
+            "participaciones": 922.40292,
             "ytd_pct": 11.44
         }
     }
