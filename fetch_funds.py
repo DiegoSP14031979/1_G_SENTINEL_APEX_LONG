@@ -2,61 +2,68 @@ import json
 import urllib.request
 from datetime import datetime
 
-# Configuración Base (Participaciones a fecha 1 de Septiembre 2026)
+# PARTICIPACIONES BASE REALES (Extracto Bancario - Septiembre 2026)
 PARTICIPACIONES_BASE = {
-    "LK_JAPON": 1041.250,      # Base anterior a la aportación de Sep
-    "LK_UNIVERSAL": 743.380    # Base anterior a la aportación de Sep
+    "LK_JAPON": 850.700297,
+    "LK_UNIVERSAL": 922.402920
 }
 
-APORTACION_MENSUAL_EUR = 120.0  # 120 € el día 12 de cada mes por fondo
+# Aportación recurrente en euros cada día 12
+APORTACION_MENSUAL_EUR = 120.0
+
+# Fecha base del último extracto validado (Mes 9 = Septiembre, Año 2026)
+FECHA_BASE_MES = 9
+FECHA_BASE_ANIO = 2026
 
 TICKERS = {
     "LK_JAPON": "0P0000A1A2.F",
     "LK_UNIVERSAL": "0P0000A1A4.F"
 }
 
-def obtener_vl_yahoo(ticker):
-    """Extrae el Valor Liquidativo en tiempo real desde Yahoo Finance."""
+def obtener_vl_yahoo(ticker, vl_fallback):
+    """Extrae el Valor Liquidativo en tiempo real o recurre al valor base."""
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?interval=1d&range=5d"
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
     try:
         req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=10) as response:
+        with urllib.request.urlopen(req, timeout=8) as response:
             data = json.loads(response.read().decode('utf-8'))
             prices = data['chart']['result'][0]['indicators']['quote'][0]['close']
             valid_prices = [p for p in prices if p is not None]
             if valid_prices:
-                return round(valid_prices[-1], 4)
+                return round(valid_prices[-1], 6)
     except Exception as e:
-        print(f"Error extrayendo {ticker}: {e}")
-    return None
+        print(f"Aviso en consulta de {ticker}: {e}")
+    return vl_fallback
 
-def calcular_participaciones_actuales(vl_japon, vl_universal):
-    """Calcula el incremento de participaciones si ya se ha superado el día 12 del mes."""
+def calcular_participaciones_acumuladas(vl_japon, vl_universal):
+    """Calcula las participaciones totales sumando 120€ por fondo tras cada día 12 transcurrido."""
     hoy = datetime.utcnow()
     
-    part_japon = PARTICIPACIONES_BASE["LK_JAPON"]
-    part_universal = PARTICIPACIONES_BASE["LK_UNIVERSAL"]
+    # 1. Calcular meses transcurridos desde Septiembre 2026
+    meses_transcurridos = (hoy.year - FECHA_BASE_ANIO) * 12 + (hoy.month - FECHA_BASE_MES)
     
-    # Si estamos en o después del día 12, sumamos las nuevas participaciones compradas con los 120 €
-    if hoy.day >= 12:
-        nuevas_part_japon = APORTACION_MENSUAL_EUR / vl_japon
-        nuevas_part_universal = APORTACION_MENSUAL_EUR / vl_universal
+    # Si aún no hemos llegado al día 12 del mes actual, ese mes no se computa todavía
+    if hoy.day < 12 and meses_transcurridos > 0:
+        meses_transcurridos -= 1
         
-        part_japon += nuevas_part_japon
-        part_universal += nuevas_part_universal
-        
-    return round(part_japon, 3), round(part_universal, 3)
+    meses_aportados = max(0, meses_transcurridos)
+    
+    # 2. Sumar el acumulado de aportaciones de 120€
+    part_japon = PARTICIPACIONES_BASE["LK_JAPON"] + (meses_aportados * (APORTACION_MENSUAL_EUR / vl_japon))
+    part_universal = PARTICIPACIONES_BASE["LK_UNIVERSAL"] + (meses_aportados * (APORTACION_MENSUAL_EUR / vl_universal))
+    
+    return round(part_japon, 6), round(part_universal, 6), meses_aportados
 
 def main():
-    # 1. Obtener Valores Liquidativos (o valores de respaldo)
-    vl_japon = obtener_vl_yahoo(TICKERS["LK_JAPON"]) or 13.0000
-    vl_universal = obtener_vl_yahoo(TICKERS["LK_UNIVERSAL"]) or 17.5614
+    # 1. Obtenemos Valores Liquidativos actualizados
+    vl_japon = obtener_vl_yahoo(TICKERS["LK_JAPON"], 16.273146)
+    vl_universal = obtener_vl_yahoo(TICKERS["LK_UNIVERSAL"], 14.548783)
 
-    # 2. Recalcular participaciones según la regla del día 12
-    part_japon, part_universal = calcular_participaciones_actuales(vl_japon, vl_universal)
+    # 2. Calculamos participaciones con la regla del día 12
+    part_japon, part_universal, meses_aportados = calcular_participaciones_acumuladas(vl_japon, vl_universal)
 
-    # 3. Valoración total de la cartera
+    # 3. Valoración total
     val_japon = round(part_japon * vl_japon, 2)
     val_universal = round(part_universal * vl_universal, 2)
     patrimonio_total = round(val_japon + val_universal, 2)
@@ -87,7 +94,7 @@ def main():
     with open("fondos_lk.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
-    print(f"Sincronización OK. Día {datetime.utcnow().day}. Participaciones -> Japón: {part_japon}, Universal: {part_universal}. Total: {patrimonio_total:.2f} €")
+    print(f"Sincronización OK. Aportaciones extra sumadas: {meses_aportados}. Total Patrimonio: {patrimonio_total:.2f} €")
 
 if __name__ == "__main__":
     main()
